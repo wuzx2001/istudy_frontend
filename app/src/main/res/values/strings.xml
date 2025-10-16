@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">iStudy</string>
+    <string name="app_subtitle">智能学习助手，中小学生的好伙伴</string>
+    
+    <!-- Navigation -->
+    <string name="nav_learning_suggestions">学习建议</string>
+    <string name="nav_teacher_recommendation">推荐老师</string>
+    <string name="nav_parent_zone">家长专区</string>
+    <string name="nav_profile">个人中心</string>
+    
+    <!-- Authentication -->
+    <string name="login">登录</string>
+    <string name="signup">注册</string>
+    <string name="family_registration">家庭注册</string>
+    <string name="individual_registration">个人注册</string>
+    <string name="family_registration_recommended">家庭注册（推荐）</string>
+    <string name="phone_number">手机号</string>
+    <string name="password">密码</string>
+    <string name="confirm_password">确认密码</string>
+    <string name="verification_code">验证码</string>
+    <string name="send_code">发送验证码</string>
+    <string name="resend_code">重发验证码</string>
+    <string name="i_am">我是</string>
+    <string name="student">学生</string>
+    <string name="parent">家长</string>
+    <string name="welcome_back">欢迎回来</string>
+    <string name="login_subtitle">登录继续您的学习之旅</string>
+    <string name="create_account">创建账户</string>
+    <string name="signup_subtitle">填写下方信息完成注册</string>
+    <string name="join_community">加入智能学习社区</string>
+    <string name="have_account">已有账户？立即登录</string>
+    <string name="no_account">没有账户？立即注册</string>
+    <string name="password_login">密码登录</string>
+    <string name="sms_login">验证码登录</string>
+    
+    <!-- Family Registration -->
+    <string name="student_information">学生信息</string>
+    <string name="parent_information">主家长信息</string>
+    <string name="student_name">学生姓名</string>
+    <string name="student_phone">学生手机号</string>
+    <string name="student_age">学生年龄</string>
+    <string name="student_gender">性别</string>
+    <string name="student_grade">年级</string>
+    <string name="student_password">学生密码</string>
+    <string name="parent_name">家长姓名</string>
+    <string name="parent_phone">家长手机号</string>
+    <string name="parent_type">家长身份</string>
+    <string name="parent_password">家长密码</string>
+    <string name="dad">爸爸</string>
+    <string name="mom">妈妈</string>
+    <string name="grandparents">祖父母</string>
+    <string name="male">男</string>
+    <string name="female">女</string>
+    <string name="unknown">未知</string>
+    <string name="grade_1">一年级</string>
+    <string name="grade_2">二年级</string>
+    <string name="grade_3">三年级</string>
+    <string name="grade_4">四年级</string>
+    <string name="grade_5">五年级</string>
+    <string name="grade_6">六年级</string>
+    <string name="grade_7">七年级</string>
+    <string name="grade_8">八年级</string>
+    <string name="grade_9">九年级</string>
+    
+    <!-- Student Registration -->
+    <string name="student_registration">学生注册</string>
+    <string name="register">注册</string>
+    
+    <!-- Learning Suggestions -->
+    <string name="homework_correction">作业批改</string>
+    <string name="course_highlights">课程重点</string>
+    <string name="question_bank">精选题库</string>
+    <string name="exam_preparation">考前冲刺</string>
+    
+    <!-- Homework Correction -->
+    <string name="take_photo">拍照</string>
+    <string name="take_photo_homework">拍照上传作业</string>
+    <string name="analyze_homework">分析作业</string>
+    <string name="correction_result">批改结果</string>
+    <string name="learning_plan">学习方案</string>
+    <string name="practice_test">练习试卷</string>
+    
+    <!-- Course Highlights -->
+    <string name="select_subject">选择学科</string>
+    <string name="select_chapter">选择章节</string>
+    <string name="key_points">重点内容</string>
+    <string name="learning_suggestions">学习建议</string>
+    
+    <!-- Question Bank -->
+    <string name="generate_test">生成试卷</string>
+    <string name="start_test">开始答题</string>
+    <string name="submit_test">提交试卷</string>
+    
+    <!-- Exam Preparation -->
+    <string name="unit_exam">单元考试</string>
+    <string name="midterm_exam">期中考试</string>
+    <string name="final_exam">期末考试</string>
+    <string name="exam_summary">考试总结</string>
+    
+    <!-- Teacher Recommendation -->
+    <string name="filter_teachers">筛选老师</string>
+    <string name="filter_by_location">按地区筛选</string>
+    <string name="filter_by_subject">按学科筛选</string>
+    <string name="filter_by_gender">按性别筛选</string>
+    <string name="book_appointment">预约</string>
+    <string name="teacher_details">老师详情</string>
+    
+    <!-- Parent Zone -->
+    <string name="learning_report">学习报告</string>
+    <string name="progress_overview">学习进度</string>
+    <string name="performance_analysis">成绩分析</string>
+    <string name="learning_recommendations">学习建议</string>
+    
+    <!-- Common -->
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确认</string>
+    <string name="loading">加载中...</string>
+    <string name="error">错误</string>
+    <string name="success">成功</string>
+    <string name="retry">重试</string>
+    <string name="back">返回</string>
+    <string name="next">下一步</string>
+    <string name="complete">完成</string>
+</resources>

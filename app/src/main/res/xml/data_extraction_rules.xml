@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- This app does not use cloud backup -->
+        <include domain="file" path="."/>
+    </cloud-backup>
+    <!--
+    Device transfers are not supported by this app.
+    -->
+    <device-transfer>
+        <exclude domain="root"/>
+        <exclude domain="file"/>
+    </device-transfer>
+</data-extraction-rules>

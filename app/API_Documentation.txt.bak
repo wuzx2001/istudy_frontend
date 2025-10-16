@@ -1,0 +1,450 @@
+================================================================================
+                          DEEPSEEK TEACHER API DOCUMENTATION
+================================================================================
+
+FastAPI Application: DeepSeek Teacher with PostgreSQL User Management
+Base URL: http://localhost:8888
+Version: 1.0.0
+
+================================================================================
+AUTHENTICATION
+================================================================================
+
+Authentication Type: Bearer Token (JWT)
+Header: Authorization: Bearer <token>
+
+All endpoints (except /auth/login and /auth/register) require authentication.
+
+================================================================================
+DATA MODELS & ENUMS
+================================================================================
+
+SexEnum:
+- male (男)
+- female (女)  
+- other (未知)
+
+GradeEnum:
+- grade_1 (一年级)
+- grade_2 (二年级)
+- grade_3 (三年级)
+- grade_4 (四年级)
+- grade_5 (五年级)
+- grade_6 (六年级)
+- grade_7 (七年级)
+- grade_8 (八年级)
+- grade_9 (九年级)
+
+UserTypeEnum:
+- 0: student (学生)
+- 1: dad (爸爸)
+- 2: mum (妈妈)
+- 3: grandparents (祖父母)
+
+================================================================================
+AUTHENTICATION ENDPOINTS
+================================================================================
+
+POST /auth/register
+Description: Register new student and master parent
+Authentication: None required
+Request Body:
+{
+    "student_username": "string (max 50)",
+    "student_telephone": "string (max 20)", 
+    "student_age": "integer (0-150)",
+    "student_sex": "SexEnum",
+    "student_grade": "GradeEnum",
+    "student_password": "string (min 6)",
+    "parent_username": "string (max 50)",
+    "parent_telephone": "string (max 20)",
+    "parent_password": "string (min 6)",
+    "parent_type": "UserTypeEnum (1=dad, 2=mum, 3=grandparents)"
+}
+Response: RegistrationResponse (201)
+
+POST /auth/login
+Description: User login for students and parents
+Authentication: None required
+Request Body:
+{
+    "username": "string",
+    "password": "string",
+    "user_type": "string ('student' or 'parent')"
+}
+Response: LoginResponse with access_token
+
+POST /auth/logout
+Description: User logout
+Authentication: Required
+Request Body:
+{
+    "user_id": "string (UUID)",
+    "user_type": "integer (0=student, 1=dad, 2=mum, 3=grandparents)"
+}
+Response: Success message
+
+GET /auth/me
+Description: Get current authenticated user information
+Authentication: Required
+Response: Current user details
+
+================================================================================
+USER MANAGEMENT ENDPOINTS
+================================================================================
+
+POST /users/
+Description: Create a new student user
+Authentication: Required
+Request Body: StudentCreate
+{
+    "username": "string (max 50)",
+    "telephone": "string (max 20)",
+    "age": "integer (0-150)",
+    "sex": "SexEnum",
+    "grade": "GradeEnum", 
+    "password": "string (min 6)"
+}
+Response: StudentResponse (201)
+
+GET /users/{user_id}
+Description: Get student by user ID
+Authentication: Required
+Parameters: user_id (UUID string)
+Response: StudentResponse
+
+GET /users/?skip=0&limit=100
+Description: Get list of all students
+Authentication: Required
+Query Parameters:
+- skip: integer (default 0)
+- limit: integer (default 100)
+Response: List[StudentResponse]
+
+PUT /users/{user_id}
+Description: Update student information
+Authentication: Required
+Parameters: user_id (UUID string)
+Request Body: StudentUpdate (all fields optional)
+Response: StudentResponse
+
+DELETE /users/{user_id}
+Description: Soft delete student (sets deleted=true)
+Authentication: Required
+Parameters: user_id (UUID string)
+Response: 204 No Content
+
+================================================================================
+PARENT MANAGEMENT ENDPOINTS  
+================================================================================
+
+POST /parents/
+Description: Create new parent linked to student
+Authentication: Required (master parent for additional parents)
+Request Body: ParentCreate
+{
+    "username": "string (max 50)",
+    "telephone": "string (max 20)",
+    "password": "string (min 6)",
+    "parent_type": "UserTypeEnum (1=dad, 2=mum, 3=grandparents)",
+    "is_master": "boolean (default false)"
+}
+Response: ParentResponse (201)
+
+GET /parents/student/{student_user_id}
+Description: Get all parents for a specific student
+Authentication: Required
+Parameters: student_user_id (UUID string)
+Response: List[ParentResponse]
+
+POST /parents/add
+Description: Add additional parent to existing student (master parent only)
+Authentication: Required (master parent)
+Request Body: AddParentRequest
+Response: ParentResponse (201)
+
+GET /users/related/{master_parent_id}
+Description: Get all related users by master parent ID
+Authentication: Required
+Parameters: master_parent_id (UUID string)
+Response: RelatedUsersResponse
+
+POST /students/add
+Description: Add additional student (master parent only)
+Authentication: Required (master parent)
+Request Body: AddStudentRequest
+Response: StudentResponse (201)
+
+================================================================================
+STUDENT WORKS ENDPOINTS
+================================================================================
+
+POST /student-works/
+Description: Create new student work submission
+Authentication: Required
+Request Body: StudentWorkCreate
+{
+    "student_id": "string (UUID)",
+    "paper": "string (max 500) - file link",
+    "oss_id": "string (optional) - filename identifier", 
+    "score": "float (0-100, optional)",
+    "right_answer": "string (max 1000, optional)",
+    "wrong_answer": "string (max 1000, optional)",
+    "suggestion": "string (max 2000, optional)",
+    "exam_id": "string (UUID, optional)"
+}
+Response: StudentWorkResponse (201)
+
+GET /student-works/{work_id}
+Description: Get student work by ID
+Authentication: Required
+Parameters: work_id (UUID string)
+Response: StudentWorkResponse
+
+GET /student-works/student/{student_id}
+Description: Get all works for a specific student
+Authentication: Required
+Parameters: student_id (UUID string)
+Query Parameters:
+- skip: integer (default 0)
+- limit: integer (default 100)
+Response: List[StudentWorkResponse]
+
+PUT /student-works/{work_id}/ai-correction
+Description: Update student work with AI correction results
+Authentication: Required
+Parameters: work_id (UUID string)
+Request Body:
+{
+    "score": "float (0-100, optional)",
+    "right_answer": "string (optional)",
+    "wrong_answer": "string (optional)", 
+    "suggestion": "string (optional)"
+}
+Response: StudentWorkResponse
+
+================================================================================
+FILE MANAGEMENT ENDPOINTS
+================================================================================
+
+POST /files/upload-paper-work
+Description: Upload student paper file (students only, auto-extracts student_id from token)
+Authentication: Required (student role only)
+Content-Type: multipart/form-data
+Form Data:
+- file: UploadFile (required) - supported: .jpg, .jpeg, .png, .gif, .pdf, .doc, .docx
+- score: float (optional)
+- right_answer: string (optional)
+- wrong_answer: string (optional)
+- suggestion: string (optional)
+- exam_id: string (optional)
+Response: StudentWorkResponse
+File Size Limit: 10MB
+
+GET /files/get-file/{filename}
+Description: Download specific file from local storage
+Authentication: Required
+Parameters: filename (string)
+Response: FileResponse (binary file data)
+
+GET /files/list-all
+Description: List all files in local storage (debugging)
+Authentication: Required
+Response: List of files with URLs
+
+POST /files/submit-paper-work
+Description: Submit student paper work with existing file reference
+Authentication: Required
+Request Body: PaperWorkSubmission
+{
+    "student_id": "string (UUID)",
+    "file_url": "string - URL of uploaded file",
+    "object_key": "string - file identifier",
+    "score": "float (0-100, optional)",
+    "right_answer": "string (max 1000, optional)",
+    "wrong_answer": "string (max 1000, optional)",
+    "suggestion": "string (max 2000, optional)",
+    "exam_id": "string (UUID, optional)"
+}
+Response: StudentWorkResponse
+
+POST /files/get-access-url
+Description: Generate signed URL for file access (OSS feature - currently disabled)
+Authentication: Required
+Request Body: FileAccessRequest
+{
+    "object_key": "string",
+    "expires_in_seconds": "integer (default 3600)"
+}
+Response: Signed URL details
+
+GET /files/list-papers/{master_user_id}
+Description: List all paper files for master user group (OSS feature - currently disabled)
+Authentication: Required
+Parameters: master_user_id (UUID string)
+Response: List of files for user group
+
+================================================================================
+LOGGING ENDPOINTS
+================================================================================
+
+POST /logs/
+Description: Create new log entry
+Authentication: Required
+Request Body: LogCreate
+{
+    "user_id": "string (UUID)",
+    "user_type": "integer (0=student, 1=dad, 2=mum, 3=grandparents)",
+    "action": "string (max 100)",
+    "details": "string (max 1000, optional)",
+    "ip_address": "string (max 45, optional)"
+}
+Response: LogResponse (201)
+
+GET /logs/user/{user_id}
+Description: Get all logs for specific user
+Authentication: Required
+Parameters: user_id (UUID string)
+Query Parameters:
+- skip: integer (default 0)
+- limit: integer (default 100)
+Response: List[LogResponse] (ordered by action_date desc)
+
+GET /logs/action/{action}
+Description: Get all logs for specific action type
+Authentication: Required
+Parameters: action (string)
+Query Parameters:
+- skip: integer (default 0)
+- limit: integer (default 100)
+Response: List[LogResponse] (ordered by action_date desc)
+
+================================================================================
+ADMIN ENDPOINTS
+================================================================================
+
+POST /admin/migrate-master-user-ids
+Description: Administrative endpoint to migrate master user IDs
+Authentication: Required
+Response: Migration status
+
+================================================================================
+STATIC FILE SERVING
+================================================================================
+
+Static Files: /static/*
+Description: Serves uploaded paper files
+Example: /static/papers/filename.jpg
+
+================================================================================
+ERROR RESPONSES
+================================================================================
+
+400 Bad Request:
+{
+    "detail": "Error description"
+}
+
+401 Unauthorized:
+{
+    "detail": "Invalid authentication token"
+}
+
+403 Forbidden:
+{
+    "detail": "Permission denied"
+}
+
+404 Not Found:
+{
+    "detail": "Resource not found"
+}
+
+422 Validation Error:
+{
+    "detail": [
+        {
+            "loc": ["field_name"],
+            "msg": "error message",
+            "type": "error_type"
+        }
+    ]
+}
+
+500 Internal Server Error:
+{
+    "detail": "Internal server error description"
+}
+
+503 Service Unavailable:
+{
+    "detail": "Service not available"
+}
+
+================================================================================
+IMPORTANT NOTES
+================================================================================
+
+1. TIMEZONE: All datetime fields use China Standard Time (CST, UTC+8)
+
+2. REDIS CACHING: 
+   - User sessions: 1 month expiration
+   - User data cache: 1 month expiration
+   - Rate limiting: 1 month window
+
+3. FILE STORAGE: Currently using local storage (./papers directory)
+   - OSS (Aliyun Object Storage) features are commented out
+   - Files are served via /static/papers/ endpoint
+
+4. AUTHENTICATION FLOW:
+   - Register: POST /auth/register (creates student + master parent)
+   - Login: POST /auth/login (returns JWT token)
+   - Use token: Include "Authorization: Bearer <token>" header
+   - Logout: POST /auth/logout
+
+5. USER HIERARCHY:
+   - Master Parent: First parent registered, has full access
+   - Additional Parents: Added by master parent, linked via master_user_id
+   - Students: Linked to master parent via master_user_id
+
+6. PERMISSIONS:
+   - Students: Can upload their own papers only
+   - Parents: Can manage students in their master group
+   - Master Parents: Can add additional parents and students
+
+7. FILE UPLOAD FLOW:
+   - POST /files/upload-paper-work (with multipart/form-data)
+   - File stored in ./papers/ directory
+   - Database record created with file reference
+   - File accessible via /files/get-file/{filename}
+
+8. DATABASE MODELS:
+   - All primary keys are UUIDs
+   - Soft deletion used (deleted=true)
+   - Foreign key relationships via master_user_id
+
+================================================================================
+EXAMPLE USAGE FLOWS
+================================================================================
+
+1. REGISTER NEW USER:
+   POST /auth/register → Returns student + parent info
+
+2. LOGIN:
+   POST /auth/login → Returns access_token
+
+3. UPLOAD PAPER (Student):
+   POST /files/upload-paper-work (with file) → Returns work record
+
+4. VIEW STUDENT WORKS:
+   GET /student-works/student/{student_id} → Returns list of works
+
+5. ADD ADDITIONAL PARENT (Master Parent):
+   POST /parents/add → Returns new parent info
+
+6. GET ALL RELATED USERS:
+   GET /users/related/{master_parent_id} → Returns all students + parents
+
+================================================================================
+END OF DOCUMENTATION
+================================================================================
